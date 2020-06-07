@@ -1,0 +1,13 @@
+{
+  "name": "Paxful Helper",
+  "version": "1.0.0",
+  "description": "Allows you to quickly view all important information about a user on paxful",
+  "manifest_version": 2,
+  "content_scripts": [
+    {
+      "matches": ["https://paxful.com/*"],
+      "run_at": "document_idle",
+      "js": ["contentScript.js"]
+    }
+  ]
+}
