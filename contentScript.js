@@ -16,14 +16,11 @@ console.log(Math.round(Date.now() / 1000));
 const getJoke = async () => {
   try {
     const response = await fetch('https://api.chucknorris.io/jokes/random');
-    console.log(1);
-    console.log(response.ok);
-    console.log(2);
     if (!response.ok) {
       throw response.status;
     }
     const data = await response.json();
-    console.log(data);
+    console.log(data.value);
   } catch (error) {
     console.log(error);
   }
