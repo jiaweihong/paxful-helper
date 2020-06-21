@@ -19,9 +19,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://paxful.com/"],
-      "run_at": "document_idle",
-      "js": ["content_script.js"]
+      "matches": ["https://paxful.com/buy-bitcoin?hasScroll=true"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
     }
   ]
 }
