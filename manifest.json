@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Allows you to quickly view all important information about a user on paxful",
   "manifest_version": 2,
-  "permissions": ["https://reqres.in/api/users"],
   "icons": {
     "16": "images/get_started16.png",
     "32": "images/get_started32.png",
@@ -20,7 +19,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.google.com.my/?gws_rd=ssl"],
+      "matches": ["https://paxful.com/"],
       "run_at": "document_idle",
       "js": ["content_script.js"]
     }
