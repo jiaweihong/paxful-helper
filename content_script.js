@@ -10,57 +10,53 @@ const getProfiles = async () => {
     const profileLists = document.querySelectorAll('.OfferUser__userInfo');
 
     for (i = 0; i <= 10; i++) {
-      let t1 = performance.now();
       let profilePath = profileLists[i].getAttribute('href');
-      let t3 = performance.now();
+
       const res = await fetch(`https://paxful.com${profilePath}`);
-      let t4 = performance.now();
+
       if (!res.ok) {
         throw res.status;
       }
-      let t5 = performance.now();
-      const html = await res.text();
-      let t6 = performance.now();
 
-      let t7 = performance.now();
+      const html = await res.text();
+
       let dummyHTML = document.createElement('html');
       dummyHTML.innerHTML = `${html}`;
-      let t8 = performance.now();
 
-      let t9 = performance.now();
       let positiveFeedback = dummyHTML.getElementsByClassName(
         'h3 m-0 text-success d-flex justify-content-between align-items-center'
       )[0].innerText;
       let negativeFeedback = dummyHTML.getElementsByClassName(
         'h3 m-0 text-danger d-flex justify-content-between align-items-center'
       )[0].innerText;
+
+      let lengthInfo = dummyHTML
+        .getElementsByClassName('list-group')[1]
+        .getElementsByClassName('list-group-item').length;
+
       let tradePartners = dummyHTML
         .getElementsByClassName('list-group')[1]
-        .getElementsByClassName('list-group-item')[2]
-        .getElementsByTagName('strong')[0].innerText;
+        .getElementsByClassName('list-group-item')
+        [lengthInfo - 5].getElementsByTagName('strong')[0].innerText;
       let trades = dummyHTML
         .getElementsByClassName('list-group')[1]
-        .getElementsByClassName('list-group-item')[3]
-        .getElementsByTagName('strong')[0].innerText;
+        .getElementsByClassName('list-group-item')
+        [lengthInfo - 4].getElementsByTagName('strong')[0].innerText;
       let tradeVolume = dummyHTML
         .getElementsByClassName('list-group')[1]
-        .getElementsByClassName('list-group-item')[4]
-        .getElementsByTagName('strong')[0].innerText;
+        .getElementsByClassName('list-group-item')
+        [lengthInfo - 3].getElementsByTagName('strong')[0].innerText;
       let trustedBy = dummyHTML
         .getElementsByClassName('list-group')[1]
-        .getElementsByClassName('list-group-item')[5]
-        .getElementsByTagName('strong')[0].innerText;
+        .getElementsByClassName('list-group-item')
+        [lengthInfo - 2].getElementsByTagName('strong')[0].innerText;
+      // problem is that the sometimes people dont select a language, which messes up the number in the list therefore not 6 index does not exist.
+      // fix by getting the total items in the group list and -1 to get items from the back
       let joined = dummyHTML
         .getElementsByClassName('list-group')[1]
-        .getElementsByClassName('list-group-item')[6]
-        .getElementsByTagName('strong')[0].innerText;
-      let t10 = performance.now();
-      let t2 = performance.now();
-      console.log(`fetch time: ${t4 - t3}`);
-      console.log(`Changing to text: ${t6 - t5}`);
-      console.log(`Creating dummyHTML: ${t8 - t7}`);
-      console.log(`Getting elements: ${t10 - t9}`);
-      console.log(`Overall: ${t2 - t1}`);
+        .getElementsByClassName('list-group-item')
+        [lengthInfo - 1].getElementsByTagName('strong')[0].innerText;
+
       console.log(
         `positiveFeedback=${positiveFeedback}, negativeFeedback=${negativeFeedback}, tradePartners=${tradePartners}, trades=${trades}, tradeVolume=${tradeVolume}, trustedBy=${trustedBy}, joined=${joined}`
       );
