@@ -4,8 +4,12 @@ chrome.runtime.sendMessage({ type: 'showPageAction' }, function (response) {
 });
 
 const getProfiles = () => {
+  // Gets an array of all the offers
   const offerList = document.getElementsByClassName('Offer__content');
+
+  // Calls all the getProfile index in a single loop without waiting for each function to finish
   for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
+    // pass the index value of the array (tradeNum) to the getProfile() as an argument
     getProfile(tradeNum);
   }
 };
@@ -13,8 +17,7 @@ const getProfiles = () => {
 // Callback function
 const getProfile = async (tradeNum) => {
   try {
-    // get the list of profile tag that has the class 'offeruser...info'
-    // const profileLists = document.querySelectorAll('.OfferUser__userInfo');
+    // Retrieves the profile's URL link
     let profilePath = document
       .getElementsByClassName('Offer__content')
       [tradeNum].querySelector('.OfferUser__userInfo')
@@ -25,9 +28,10 @@ const getProfile = async (tradeNum) => {
     if (!res.ok) {
       throw res.status;
     }
-
+    // Returns the HTML content of a page as text
     const html = await res.text();
 
+    // Create a dummy HTML page that will convert the HTML string into an actual HTML page
     let dummyHTML = document.createElement('html');
     dummyHTML.innerHTML = `${html}`;
 
