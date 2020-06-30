@@ -7,10 +7,13 @@ chrome.runtime.sendMessage({ type: 'showPageAction' }, function (response) {
 const getProfiles = async () => {
   try {
     // get the list of profile tag that has the class 'offeruser...info'
-    const profileLists = document.querySelectorAll('.OfferUser__userInfo');
+    // const profileLists = document.querySelectorAll('.OfferUser__userInfo');
+    const offerList = document.getElementsByClassName('Offer__content');
 
-    for (i = 0; i <= 10; i++) {
-      let profilePath = profileLists[i].getAttribute('href');
+    for (i = 0; i < 3; i++) {
+      let profilePath = offerList[i]
+        .querySelector('.OfferUser__userInfo')
+        .getAttribute('href');
 
       const res = await fetch(`https://paxful.com${profilePath}`);
 
@@ -23,9 +26,6 @@ const getProfiles = async () => {
       let dummyHTML = document.createElement('html');
       dummyHTML.innerHTML = `${html}`;
 
-      let positiveFeedback = dummyHTML.getElementsByClassName(
-        'h3 m-0 text-success d-flex justify-content-between align-items-center'
-      )[0].innerText;
       let negativeFeedback = dummyHTML.getElementsByClassName(
         'h3 m-0 text-danger d-flex justify-content-between align-items-center'
       )[0].innerText;
@@ -50,15 +50,83 @@ const getProfiles = async () => {
         .getElementsByClassName('list-group')[1]
         .getElementsByClassName('list-group-item')
         [lengthInfo - 2].getElementsByTagName('strong')[0].innerText;
-      // problem is that the sometimes people dont select a language, which messes up the number in the list therefore not 6 index does not exist.
-      // fix by getting the total items in the group list and -1 to get items from the back
       let joined = dummyHTML
         .getElementsByClassName('list-group')[1]
         .getElementsByClassName('list-group-item')
         [lengthInfo - 1].getElementsByTagName('strong')[0].innerText;
+      if (
+        dummyHTML.getElementsByClassName(
+          'list-group-item d-flex align-items-center'
+        ).length === 3
+      ) {
+        var verifiedDataContent = dummyHTML
+          .getElementsByClassName(
+            'list-group-item d-flex align-items-center'
+          )[2]
+          .querySelector('span')
+          .getAttribute('data-content');
+        var verifiedArray = verifiedDataContent.split(' ');
+        var verifiedDate = verifiedArray.slice(6, 12).join(' ');
+      } else {
+        var isVerified = 'ID Not Verified';
+      }
+
+      // Create a paragraph element then createTextNode and append it to the new paragraph element.
+      let negativeFeedbackPara = document.createElement('p');
+      let negativeFeedbackText = document.createTextNode(
+        `Negative Feedback: ${negativeFeedback}`
+      );
+      negativeFeedbackPara.appendChild(negativeFeedbackText);
+      offerList[i]
+        .getElementsByClassName(
+          'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        )[0]
+        .appendChild(negativeFeedbackPara);
+
+      let tradePartnersPara = document.createElement('p');
+      let tradePartnersText = document.createTextNode(
+        `Trade Partners: ${tradePartners}`
+      );
+      tradePartnersPara.appendChild(tradePartnersText);
+      offerList[i]
+        .getElementsByClassName(
+          'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        )[0]
+        .appendChild(tradePartnersPara);
+
+      let tradeVolumePara = document.createElement('p');
+      let tradeVolumeText = document.createTextNode(
+        `Trade Volume: ${tradeVolume}`
+      );
+      tradeVolumePara.appendChild(tradeVolumeText);
+      offerList[i]
+        .getElementsByClassName(
+          'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        )[0]
+        .appendChild(tradeVolumePara);
+
+      let tradesPara = document.createElement('p');
+      let tradesText = document.createTextNode(`No. Trades: ${trades}`);
+      tradesPara.appendChild(tradesText);
+      offerList[i]
+        .getElementsByClassName(
+          'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        )[0]
+        .appendChild(tradesPara);
+
+      let verifiedDatePara = document.createElement('p');
+      let verifiedDateText = document.createTextNode(
+        `ID Verified via: ${verifiedDate}`
+      );
+      verifiedDatePara.appendChild(verifiedDateText);
+      offerList[i]
+        .getElementsByClassName(
+          'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        )[0]
+        .appendChild(verifiedDatePara);
 
       console.log(
-        `positiveFeedback=${positiveFeedback}, negativeFeedback=${negativeFeedback}, tradePartners=${tradePartners}, trades=${trades}, tradeVolume=${tradeVolume}, trustedBy=${trustedBy}, joined=${joined}`
+        `Feedback=${negativeFeedback}, tradePartners=${tradePartners}, trades=${trades}, tradeVolume=${tradeVolume}, trustedBy=${trustedBy}, joined=${joined}`
       );
     }
   } catch (error) {
@@ -68,3 +136,21 @@ const getProfiles = async () => {
 
 // This will only call the callback function once the page has fully loaded
 window.addEventListener('load', getProfiles);
+
+// console.log(
+//   dummyHTML.getElementsByClassName(
+//     'w-100 py-3 px-4 border border-top-0 d-flex flex-sm-row flex-xxxs-column FeedbackItem__feedbackItem'
+//   ).length
+// );
+// CANT SEEM TO FIND THE BUYERS / SELLERS SECTION
+// dummyHTML
+//   .getElementsByClassName(
+//     'w-100 TabButton__showMoreBtn btn btn-link btn-lg'
+//   )[0]
+//   .click();
+
+// console.log(
+//   dummyHTML.getElementsByClassName(
+//     'w-100 py-3 px-4 border border-top-0 d-flex flex-sm-row flex-xxxs-column FeedbackItem__feedbackItem'
+//   ).length
+// );
