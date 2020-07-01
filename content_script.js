@@ -42,7 +42,6 @@ const getProfile = async (tradeNum) => {
     let lengthInfo = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item').length;
-
     let tradePartners = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
@@ -68,13 +67,19 @@ const getProfile = async (tradeNum) => {
       .querySelector('span')
       .getAttribute('data-content');
     let verifiedArray = verifiedDataContent.split(' ');
-    let verifiedDate = verifiedArray.slice(6, 12).join(' ');
+    let verifiedDate = verifiedArray.slice(9, 12).join(' ');
 
     // Create a paragraph element then createTextNode and append it to the new paragraph element.
     let negativeFeedbackPara = document.createElement('p');
-    let negativeFeedbackText = document.createTextNode(
-      `Negative Feedback: ${negativeFeedback}`
-    );
+    // Image 1) When using images that you want to insert into the content of a page, you need to define it in the web_accessible_resources.
+    // Image 2) Create an image element
+    let negativeFeedbackIMG = document.createElement('img');
+    // Image 3) When setting the value for src, you need to use chrome.runtime.getURL api as it convert the path to a fully qualified URL that is relative to your extension. Otherwise, it will read the path relative to the website, i.e paxful.com/images/dislike.svg
+    negativeFeedbackIMG.src = chrome.runtime.getURL('images/dislike.svg');
+    negativeFeedbackIMG.height = 16;
+    negativeFeedbackIMG.width = 16;
+    let negativeFeedbackText = document.createTextNode(`${negativeFeedback}`);
+    negativeFeedbackPara.appendChild(negativeFeedbackIMG);
     negativeFeedbackPara.appendChild(negativeFeedbackText);
     document
       .getElementsByClassName('Offer__content')
@@ -91,7 +96,7 @@ const getProfile = async (tradeNum) => {
     document
       .getElementsByClassName('Offer__content')
       [tradeNum].getElementsByClassName(
-        'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        'col-3 d-none d-lg-block order-lg-3 mt-4 regular-20 text-right'
       )[0]
       .appendChild(tradePartnersPara);
 
@@ -103,7 +108,7 @@ const getProfile = async (tradeNum) => {
     document
       .getElementsByClassName('Offer__content')
       [tradeNum].getElementsByClassName(
-        'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        'col-3 d-none d-lg-block order-lg-3 mt-4 regular-20 text-right'
       )[0]
       .appendChild(tradeVolumePara);
 
@@ -113,13 +118,13 @@ const getProfile = async (tradeNum) => {
     document
       .getElementsByClassName('Offer__content')
       [tradeNum].getElementsByClassName(
-        'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+        'col-3 d-none d-lg-block order-lg-3 mt-4 regular-20 text-right'
       )[0]
       .appendChild(tradesPara);
 
     let verifiedDatePara = document.createElement('p');
     let verifiedDateText = document.createTextNode(
-      `ID Verified via: ${verifiedDate}`
+      `ID Verified: ${verifiedDate}`
     );
     verifiedDatePara.appendChild(verifiedDateText);
     document
