@@ -8,7 +8,7 @@ const getProfiles = () => {
   const offerList = document.getElementsByClassName('Offer__content');
 
   // Calls all the getProfile index in a single loop without waiting for each function to finish
-  for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
+  for (tradeNum = 0; tradeNum <= 0; tradeNum++) {
     // pass the index value of the array (tradeNum) to the getProfile() as an argument
     getProfile(tradeNum);
   }
@@ -123,9 +123,12 @@ const getProfile = async (tradeNum) => {
       .appendChild(tradesPara);
 
     let verifiedDatePara = document.createElement('p');
-    let verifiedDateText = document.createTextNode(
-      `ID Verified: ${verifiedDate}`
-    );
+    let verifiedDateIMG = document.createElement('img');
+    verifiedDateIMG.src = chrome.runtime.getURL('images/user.png');
+    verifiedDateIMG.height = 20;
+    verifiedDateIMG.width = 20;
+    let verifiedDateText = document.createTextNode(`  ${verifiedDate}`);
+    verifiedDatePara.appendChild(verifiedDateIMG);
     verifiedDatePara.appendChild(verifiedDateText);
     document
       .getElementsByClassName('Offer__content')
@@ -140,3 +143,65 @@ const getProfile = async (tradeNum) => {
 
 // This will only call the callback function once the page has fully loaded
 window.addEventListener('load', getProfiles);
+
+const feedback = async () => {
+  const t1 = performance.now();
+  const fetchBuyerFeedbackPage1 = fetch(
+    'https://paxful.com/rest/v1/users/Alice521/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=1'
+  );
+  const fetchSellerFeedbackPage1 = fetch(
+    'https://paxful.com/rest/v1/users/Alice521/feedbacks?camelCase=1&feedback=all&offer_type=buy&f_page=1'
+  );
+
+  const page1FeedbackResponse = await Promise.all([
+    fetchBuyerFeedbackPage1,
+    fetchSellerFeedbackPage1,
+  ]);
+
+  const buyerFeedbackData = await page1FeedbackResponse[0].json();
+  const sellerFeedbackData = await page1FeedbackResponse[1].json();
+
+  const numberOfBuyerFeedbackPages = Math.ceil(buyerFeedbackData.total / 15);
+  const numberOfSellerFeedbackPages = Math.ceil(sellerFeedbackData.total / 15);
+
+  let buyerFeedbackArray = [];
+  console.log(numberOfSellerFeedbackPages);
+
+  for (let page = 1; page <= numberOfBuyerFeedbackPages; page++) {
+    const buyerFeedbackPageXResponse = await fetch(
+      `https://paxful.com/rest/v1/users/Alice521/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=${page}`
+    );
+    const buyerFeedbackPageXJson = await buyerFeedbackPageXResponse.json();
+    console.log(buyerFeedbackPageXJson);
+
+    for (i in buyerFeedbackPageXJson.data) {
+      // if (buyerFeedbackData.data[i].paymentMethodName === 'Alipay') {
+      // }
+      buyerFeedbackArray.push(buyerFeedbackPageXJson.data[i].paymentMethodName);
+    }
+  }
+  console.log(buyerFeedbackArray);
+
+  let sellerFeedbackArray = [];
+  for (let page = 1; page <= numberOfSellerFeedbackPages; page++) {
+    const sellerFeedbackPageXResponse = await fetch(
+      `https://paxful.com/rest/v1/users/Alice521/feedbacks?camelCase=1&feedback=all&offer_type=buy&f_page=${page}`
+    );
+    const sellerFeedbackPageXJson = await sellerFeedbackPageXResponse.json();
+    console.log(sellerFeedbackPageXJson);
+
+    for (i in sellerFeedbackPageXJson.data) {
+      // if (sellerFeedbackData.data[i].paymentMethodName === 'Alipay') {
+      // }
+      sellerFeedbackArray.push(
+        sellerFeedbackPageXJson.data[i].paymentMethodName
+      );
+    }
+  }
+  console.log(sellerFeedbackArray);
+  const t2 = performance.now();
+
+  console.log(t2 - t1);
+};
+
+feedback();
