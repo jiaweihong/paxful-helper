@@ -17,8 +17,94 @@ const getProfiles = () => {
 // Callback function
 const getProfile = async (tradeNum) => {
   try {
+    // feedback
+    const paymentType = document.querySelectorAll(
+      'p[class="m-0 regular-24 OfferPaymentMethod__paymentMethodName"]'
+    )[tradeNum].innerText;
+    const username = document.querySelectorAll(
+      'a[class="OfferUser__userInfo"]'
+    )[tradeNum].innerText;
+
+    const fetchBuyerFeedbackPage1 = fetch(
+      `https://paxful.com/rest/v1/users/${username}/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=1`
+    );
+    const fetchSellerFeedbackPage1 = fetch(
+      `https://paxful.com/rest/v1/users/${username}/feedbacks?camelCase=1&feedback=all&offer_type=buy&f_page=1`
+    );
+
+    const page1FeedbackResponse = await Promise.all([
+      fetchBuyerFeedbackPage1,
+      fetchSellerFeedbackPage1,
+    ]);
+
+    const buyerFeedbackData = await page1FeedbackResponse[0].json();
+    const sellerFeedbackData = await page1FeedbackResponse[1].json();
+
+    const numberOfBuyerFeedbackPages = Math.ceil(buyerFeedbackData.total / 15);
+    const numberOfSellerFeedbackPages = Math.ceil(
+      sellerFeedbackData.total / 15
+    );
+
+    let buyerFeedbackArray = [];
+    const buyerFeedbackPagesPromises = [];
+    for (let page = 1; page <= numberOfBuyerFeedbackPages; page++) {
+      buyerFeedbackPagesPromises.push(
+        fetch(
+          `https://paxful.com/rest/v1/users/${username}/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=${page}`
+        )
+      );
+    }
+    const buyerFeedbackResponses = await Promise.all(
+      buyerFeedbackPagesPromises
+    );
+    let buyerFeedbackJsonPromises = [];
+    for (response in buyerFeedbackResponses) {
+      buyerFeedbackJsonPromises.push(buyerFeedbackResponses[response].json());
+    }
+    let buyerFeedbackJsons = await Promise.all(buyerFeedbackJsonPromises);
+
+    for (json in buyerFeedbackJsons) {
+      for (i in buyerFeedbackJsons[json].data) {
+        if (buyerFeedbackJsons[json].data[i].paymentMethodName == paymentType) {
+          buyerFeedbackArray.push(
+            buyerFeedbackJsons[json].data[i].paymentMethodName
+          );
+        }
+      }
+    }
+
+    let sellerFeedbackArray = [];
+    const sellerFeedbackPagesPromises = [];
+    for (let page = 1; page <= numberOfSellerFeedbackPages; page++) {
+      sellerFeedbackPagesPromises.push(
+        fetch(
+          `https://paxful.com/rest/v1/users/${username}/feedbacks?camelCase=1&feedback=all&offer_type=buy&f_page=${page}`
+        )
+      );
+    }
+    const sellerFeedbackResponses = await Promise.all(
+      sellerFeedbackPagesPromises
+    );
+    let sellerFeedbackJsonPromises = [];
+    for (response in sellerFeedbackResponses) {
+      sellerFeedbackJsonPromises.push(sellerFeedbackResponses[response].json());
+    }
+    let sellerFeedbackJsons = await Promise.all(sellerFeedbackJsonPromises);
+
+    for (json in sellerFeedbackJsons) {
+      for (i in sellerFeedbackJsons[json].data) {
+        if (
+          sellerFeedbackJsons[json].data[i].paymentMethodName == paymentType
+        ) {
+          sellerFeedbackArray.push(
+            sellerFeedbackJsons[json].data[i].paymentMethodName
+          );
+        }
+      }
+    }
+
     // Retrieves the profile's URL link
-    let profilePath = document
+    const profilePath = document
       .getElementsByClassName('Offer__content')
       [tradeNum].querySelector('.OfferUser__userInfo')
       .getAttribute('href');
@@ -136,6 +222,48 @@ const getProfile = async (tradeNum) => {
         'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
       )[0]
       .appendChild(verifiedDatePara);
+
+    const totalNumberOfFeedbackWithPaymentX =
+      sellerFeedbackArray.length + buyerFeedbackArray.length;
+
+    const totalFeedbackOfBitcoinSoldWithPaymentX = buyerFeedbackArray.length;
+    const totalFeedbackOfBitcoinBoughtWithPaymentX = sellerFeedbackArray.length;
+
+    let feedbackPara = document.createElement('p');
+    let feedbackText = document.createTextNode(
+      `Total ${paymentType} feedback: ${totalNumberOfFeedbackWithPaymentX} `
+    );
+    feedbackPara.appendChild(feedbackText);
+    document
+      .getElementsByClassName('Offer__content')
+      [tradeNum].querySelector(
+        'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
+      )
+      .appendChild(feedbackPara);
+
+    let buyerFeedbackPara = document.createElement('p');
+    let buyerFeedbackText = document.createTextNode(
+      `No. feedback for buying bitcoin with ${paymentType}: ${totalFeedbackOfBitcoinBoughtWithPaymentX} `
+    );
+    buyerFeedbackPara.appendChild(buyerFeedbackText);
+    document
+      .getElementsByClassName('Offer__content')
+      [tradeNum].querySelector(
+        'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
+      )
+      .appendChild(buyerFeedbackPara);
+
+    let sellerFeedbackPara = document.createElement('p');
+    let sellerFeedbackText = document.createTextNode(
+      `No. feedback for selling bitcoin with ${paymentType}: ${totalFeedbackOfBitcoinSoldWithPaymentX} `
+    );
+    sellerFeedbackPara.appendChild(sellerFeedbackText);
+    document
+      .getElementsByClassName('Offer__content')
+      [tradeNum].querySelector(
+        'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
+      )
+      .appendChild(sellerFeedbackPara);
   } catch (error) {
     console.error(error);
   }
@@ -143,83 +271,3 @@ const getProfile = async (tradeNum) => {
 
 // This will only call the callback function once the page has fully loaded
 window.addEventListener('load', getProfiles);
-
-const feedback = async () => {
-  const t1 = performance.now();
-  const fetchBuyerFeedbackPage1 = fetch(
-    'https://paxful.com/rest/v1/users/MagnoX6/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=1'
-  );
-  const fetchSellerFeedbackPage1 = fetch(
-    'https://paxful.com/rest/v1/users/MagnoX6/feedbacks?camelCase=1&feedback=all&offer_type=buy&f_page=1'
-  );
-
-  const page1FeedbackResponse = await Promise.all([
-    fetchBuyerFeedbackPage1,
-    fetchSellerFeedbackPage1,
-  ]);
-
-  const buyerFeedbackData = await page1FeedbackResponse[0].json();
-  const sellerFeedbackData = await page1FeedbackResponse[1].json();
-
-  const numberOfBuyerFeedbackPages = Math.ceil(buyerFeedbackData.total / 15);
-  const numberOfSellerFeedbackPages = Math.ceil(sellerFeedbackData.total / 15);
-
-  let buyerFeedbackArray = [];
-  const buyerFeedbackPagesPromises = [];
-  for (let page = 1; page <= numberOfBuyerFeedbackPages; page++) {
-    buyerFeedbackPagesPromises.push(
-      fetch(
-        `https://paxful.com/rest/v1/users/MagnoX6/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=${page}`
-      )
-    );
-  }
-  const buyerFeedbackResponses = await Promise.all(buyerFeedbackPagesPromises);
-
-  let buyerFeedbackJsonPromises = [];
-  for (response in buyerFeedbackResponses) {
-    buyerFeedbackJsonPromises.push(buyerFeedbackResponses[response].json());
-  }
-  let buyerFeedbackJsons = await Promise.all(buyerFeedbackJsonPromises);
-
-  for (json in buyerFeedbackJsons) {
-    for (i in buyerFeedbackJsons[json].data) {
-      buyerFeedbackArray.push(
-        buyerFeedbackJsons[json].data[i].paymentMethodName
-      );
-    }
-  }
-
-  console.log(buyerFeedbackArray);
-
-  let sellerFeedbackArray = [];
-  const sellerFeedbackPagesPromises = [];
-  for (let page = 1; page <= numberOfSellerFeedbackPages; page++) {
-    sellerFeedbackPagesPromises.push(
-      fetch(
-        `https://paxful.com/rest/v1/users/MagnoX6/feedbacks?camelCase=1&feedback=all&offer_type=buy&f_page=${page}`
-      )
-    );
-  }
-  const sellerFeedbackResponses = await Promise.all(
-    sellerFeedbackPagesPromises
-  );
-  let sellerFeedbackJsonPromises = [];
-  for (response in sellerFeedbackResponses) {
-    sellerFeedbackJsonPromises.push(sellerFeedbackResponses[response].json());
-  }
-  let sellerFeedbackJsons = await Promise.all(sellerFeedbackJsonPromises);
-
-  for (json in sellerFeedbackJsons) {
-    for (i in sellerFeedbackJsons[json].data) {
-      sellerFeedbackArray.push(
-        sellerFeedbackJsons[json].data[i].paymentMethodName
-      );
-    }
-  }
-  console.log(sellerFeedbackArray);
-
-  const t2 = performance.now();
-  console.log(t2 - t1);
-};
-
-feedback();
