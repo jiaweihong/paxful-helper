@@ -23,6 +23,7 @@ const getFeedback = async (tradeNum) => {
     tradeNum
   ].innerText;
 
+  // Getting the first page of buy and sell just to see how many pages we need to call
   const fetchBuyerFeedbackPage1 = fetch(
     `https://paxful.com/rest/v1/users/${username}/feedbacks?camelCase=1&feedback=all&offer_type=sell&f_page=1`
   );
@@ -38,10 +39,21 @@ const getFeedback = async (tradeNum) => {
   const buyerFeedbackData = await page1FeedbackResponse[0].json();
   const sellerFeedbackData = await page1FeedbackResponse[1].json();
 
-  const numberOfBuyerFeedbackPages = Math.ceil(buyerFeedbackData.total / 15);
-  const numberOfSellerFeedbackPages = Math.ceil(sellerFeedbackData.total / 15);
+  let numberOfBuyerFeedbackPages = Math.ceil(buyerFeedbackData.total / 15);
+  let numberOfSellerFeedbackPages = Math.ceil(sellerFeedbackData.total / 15);
 
-  let buyerFeedbackArray = [];
+  if (numberOfBuyerFeedbackPages > 17) {
+    numberOfBuyerFeedbackPages = 17;
+  }
+  if (numberOfSellerFeedbackPages > 17) {
+    numberOfSellerFeedbackPages = 17;
+  }
+
+  // Initializing the feedback values for buy and sell
+  let totalFeedbackOfBitcoinSoldWithPaymentX = 0;
+  let totalFeedbackOfBitcoinBoughtWithPaymentX = 0;
+
+  // Querying all the buyer feedback pages and adding the promise to an array
   const buyerFeedbackPagesPromises = [];
   for (let page = 1; page <= numberOfBuyerFeedbackPages; page++) {
     buyerFeedbackPagesPromises.push(
@@ -50,25 +62,7 @@ const getFeedback = async (tradeNum) => {
       )
     );
   }
-  const buyerFeedbackResponses = await Promise.all(buyerFeedbackPagesPromises);
-  let buyerFeedbackJsonPromises = [];
-  for (response in buyerFeedbackResponses) {
-    buyerFeedbackJsonPromises.push(buyerFeedbackResponses[response].json());
-  }
-  let buyerFeedbackJsons = await Promise.all(buyerFeedbackJsonPromises);
-
-  for (json in buyerFeedbackJsons) {
-    console.log(buyerFeedbackJsons[json]);
-    for (i in buyerFeedbackJsons[json].data) {
-      if (buyerFeedbackJsons[json].data[i].paymentMethodName == paymentType) {
-        buyerFeedbackArray.push(
-          buyerFeedbackJsons[json].data[i].paymentMethodName
-        );
-      }
-    }
-  }
-
-  let sellerFeedbackArray = [];
+  // Querying all the seller feedback pages and adding the promise to an array
   const sellerFeedbackPagesPromises = [];
   for (let page = 1; page <= numberOfSellerFeedbackPages; page++) {
     sellerFeedbackPagesPromises.push(
@@ -77,31 +71,50 @@ const getFeedback = async (tradeNum) => {
       )
     );
   }
+
+  // Awaiting the promises to resolve
+  const buyerFeedbackResponses = await Promise.all(buyerFeedbackPagesPromises);
   const sellerFeedbackResponses = await Promise.all(
     sellerFeedbackPagesPromises
   );
+
+  // Turning the buyer feedback resolved promises into JSON promises
+  let buyerFeedbackJsonPromises = [];
+  for (response in buyerFeedbackResponses) {
+    buyerFeedbackJsonPromises.push(buyerFeedbackResponses[response].json());
+  }
+  // Turning the seller feedback resolved promises into JSON promises
   let sellerFeedbackJsonPromises = [];
   for (response in sellerFeedbackResponses) {
     sellerFeedbackJsonPromises.push(sellerFeedbackResponses[response].json());
   }
+
+  // awaiting the JSON promises to resolve
+  let buyerFeedbackJsons = await Promise.all(buyerFeedbackJsonPromises);
   let sellerFeedbackJsons = await Promise.all(sellerFeedbackJsonPromises);
 
-  for (json in sellerFeedbackJsons) {
-    for (i in sellerFeedbackJsons[json].data) {
-      if (sellerFeedbackJsons[json].data[i].paymentMethodName == paymentType) {
-        sellerFeedbackArray.push(
-          sellerFeedbackJsons[json].data[i].paymentMethodName
-        );
+  // Looping through the buyer and seller feedback data individually, adding a count everytime a data is matched
+  for (json in buyerFeedbackJsons) {
+    console.log(buyerFeedbackJsons[json]);
+    for (i in buyerFeedbackJsons[json].data) {
+      if (buyerFeedbackJsons[json].data[i].paymentMethodName == paymentType) {
+        totalFeedbackOfBitcoinSoldWithPaymentX += 1;
       }
     }
   }
-
+  for (json in sellerFeedbackJsons) {
+    for (i in sellerFeedbackJsons[json].data) {
+      if (sellerFeedbackJsons[json].data[i].paymentMethodName == paymentType) {
+        totalFeedbackOfBitcoinBoughtWithPaymentX += 1;
+      }
+    }
+  }
+  // Total number of feedbacks
   const totalNumberOfFeedbackWithPaymentX =
-    sellerFeedbackArray.length + buyerFeedbackArray.length;
+    totalFeedbackOfBitcoinSoldWithPaymentX +
+    totalFeedbackOfBitcoinBoughtWithPaymentX;
 
-  const totalFeedbackOfBitcoinSoldWithPaymentX = buyerFeedbackArray.length;
-  const totalFeedbackOfBitcoinBoughtWithPaymentX = sellerFeedbackArray.length;
-
+  // Creating the DOM elements and adding it to the page
   let feedbackPara = document.createElement('p');
   let feedbackText = document.createTextNode(
     `Total ${paymentType} feedback: ${totalNumberOfFeedbackWithPaymentX} `
@@ -116,7 +129,7 @@ const getFeedback = async (tradeNum) => {
 
   let buyerFeedbackPara = document.createElement('p');
   let buyerFeedbackText = document.createTextNode(
-    `No. feedback for buying bitcoin with ${paymentType}: ${totalFeedbackOfBitcoinBoughtWithPaymentX} `
+    `Total feedback for buying bitcoin with ${paymentType}: ${totalFeedbackOfBitcoinBoughtWithPaymentX} `
   );
   buyerFeedbackPara.appendChild(buyerFeedbackText);
   document
@@ -128,7 +141,7 @@ const getFeedback = async (tradeNum) => {
 
   let sellerFeedbackPara = document.createElement('p');
   let sellerFeedbackText = document.createTextNode(
-    `No. feedback for selling bitcoin with ${paymentType}: ${totalFeedbackOfBitcoinSoldWithPaymentX} `
+    `Total feedback for selling bitcoin for ${paymentType}: ${totalFeedbackOfBitcoinSoldWithPaymentX} `
   );
   sellerFeedbackPara.appendChild(sellerFeedbackText);
   document
@@ -137,7 +150,6 @@ const getFeedback = async (tradeNum) => {
       'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
     )
     .appendChild(sellerFeedbackPara);
-  console.log(tradeNum);
 };
 
 // Callback function
@@ -180,14 +192,6 @@ const getProfile = async (tradeNum) => {
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
       [lengthInfo - 3].getElementsByTagName('strong')[0].innerText;
-    let trustedBy = dummyHTML
-      .getElementsByClassName('list-group')[1]
-      .getElementsByClassName('list-group-item')
-      [lengthInfo - 2].getElementsByTagName('strong')[0].innerText;
-    let joined = dummyHTML
-      .getElementsByClassName('list-group')[1]
-      .getElementsByClassName('list-group-item')
-      [lengthInfo - 1].getElementsByTagName('strong')[0].innerText;
     let verifiedDataContent = dummyHTML
       .getElementsByClassName('list-group-item d-flex align-items-center')[2]
       .querySelector('span')
@@ -264,10 +268,8 @@ const getProfile = async (tradeNum) => {
       .appendChild(verifiedDatePara);
 
     let feedbackButton = document.createElement('button');
-    let feedbackButtonText = document.createTextNode('Get Feedback');
+    let feedbackButtonText = document.createTextNode('Get Past 500 Feedback');
     feedbackButton.appendChild(feedbackButtonText);
-    // When setting the value for 'onclick', when have to make sure it knows we are referencing the function getFeedback that exists inside this file
-    // If we wrote `getFeedback(${tradeNum})` it would look for the function getFeedback inside chrome
     feedbackButton.onclick = () => {
       getFeedback(tradeNum);
     };
