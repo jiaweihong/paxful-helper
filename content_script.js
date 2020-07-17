@@ -176,7 +176,8 @@ const getProfile = async (tradeNum) => {
     let negativeFeedback = dummyHTML.getElementsByClassName(
       'h3 m-0 text-danger d-flex justify-content-between align-items-center'
     )[0].innerText;
-
+    let profileImageSrc = dummyHTML.querySelector('img[class="rounded-circle"]')
+      .src;
     let lengthInfo = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item').length;
@@ -198,6 +199,16 @@ const getProfile = async (tradeNum) => {
       .getAttribute('data-content');
     let verifiedArray = verifiedDataContent.split(' ');
     let verifiedDate = verifiedArray.slice(9, 12).join(' ');
+
+    let profileImageImg = document.createElement('img');
+    profileImageImg.src = profileImageSrc;
+    profileImageImg.height = 40;
+    profileImageImg.width = 40;
+    profileImageImg.style = 'border-radius: 50%; padding-right: 5px';
+    document
+      .getElementsByClassName('order-1 col-5 col-lg-2 d-flex flex-column pr-0')
+      [tradeNum].querySelector('div[class="d-flex align-items-center"]')
+      .prepend(profileImageImg);
 
     // Create a paragraph element then createTextNode and append it to the new paragraph element.
     let negativeFeedbackPara = document.createElement('p');
