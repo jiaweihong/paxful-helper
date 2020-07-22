@@ -283,6 +283,7 @@ const getProfile = async (tradeNum) => {
     feedbackButton.appendChild(feedbackButtonText);
     feedbackButton.onclick = () => {
       getFeedback(tradeNum);
+      feedbackButton.disabled = true;
     };
     document
       .getElementsByClassName('Offer__content')

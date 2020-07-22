@@ -23,7 +23,12 @@
         "https://paxful.com/buy-bitcoin*",
         "https://paxful.com/sell-bitcoin*"
       ],
-      "js": ["content_script.js"],
+      "js": ["content_script_listing.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://paxful.com/trade/*"],
+      "js": ["content_script_trade.js"],
       "run_at": "document_end"
     }
   ],
