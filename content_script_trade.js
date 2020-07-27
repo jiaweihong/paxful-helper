@@ -3,9 +3,6 @@ const getTradeInfo = async () => {
     var username = document
       .querySelector('a[class="qa-username"]')
       .getAttribute('title');
-    console.log(username);
-    var line = document.createElement('hr');
-    document.querySelector('div[id="info_block"]').appendChild(line);
 
     // get a full breakdown of past 1000 feedbacks
     // Getting the first page of buy and sell just to see how many pages we need to call
@@ -192,8 +189,67 @@ const getTradeInfo = async () => {
       sortedSellerFeedbackObject[feedback[0]] = feedback[1];
     });
 
-    console.log(sortedBuyerFeedbackObject);
-    console.log(sortedSellerFeedbackObject);
+    var line = document.createElement('hr');
+    document.querySelector('div[id="info_block"]').appendChild(line);
+
+    let userInformationDiv = document.createElement('div');
+    userInformationDiv.className = 'container';
+    userInformationDiv.style = 'padding-left: 0px';
+
+    let userInfoTitle = document.createElement('h3');
+    let userInfoTitleText = document.createTextNode('User Information');
+    userInfoTitle.appendChild(userInfoTitleText);
+    userInformationDiv.appendChild(userInfoTitle);
+
+    // Buyer feedback section
+    let buyerFeedbackDiv = document.createElement('div');
+    buyerFeedbackDiv.className = 'col-md-6';
+    buyerFeedbackDiv.style = 'padding-left: 0px';
+    let fromBuyerPara = document.createElement('h5');
+    fromBuyerPara.style = 'margin-bottom: 5px';
+    let fromBuyerParaText = document.createTextNode('Feedback from Buyers:');
+    fromBuyerPara.appendChild(fromBuyerParaText);
+    buyerFeedbackDiv.appendChild(fromBuyerPara);
+
+    let fromBuyerUl = document.createElement('ul');
+    fromBuyerUl.style = 'padding-left: 20px';
+    for (paymentMethod in sortedBuyerFeedbackObject) {
+      let fromBuyerLi = document.createElement('li');
+      let fromBuyerLiText = document.createTextNode(
+        `${paymentMethod}: ${sortedBuyerFeedbackObject[paymentMethod]}`
+      );
+      fromBuyerLi.appendChild(fromBuyerLiText);
+      fromBuyerUl.appendChild(fromBuyerLi);
+    }
+    buyerFeedbackDiv.appendChild(fromBuyerUl);
+    userInformationDiv.appendChild(buyerFeedbackDiv);
+
+    // Seller feedback section
+    let sellerFeedbackDiv = document.createElement('div');
+    sellerFeedbackDiv.className = 'col-md-6';
+    buyerFeedbackDiv.style = 'padding-left: 0px';
+    let fromSellerPara = document.createElement('h5');
+    fromSellerPara.style = 'margin-bottom: 5px';
+    let fromSellerParaText = document.createTextNode('Feedback from Sellers:');
+    fromSellerPara.appendChild(fromSellerParaText);
+    sellerFeedbackDiv.appendChild(fromSellerPara);
+
+    let fromSellerUl = document.createElement('ul');
+    fromSellerUl.style = 'padding-left: 20px';
+    for (paymentMethod in sortedSellerFeedbackObject) {
+      let fromSellerLi = document.createElement('li');
+      let fromSellerLiText = document.createTextNode(
+        `${paymentMethod}: ${sortedSellerFeedbackObject[paymentMethod]}`
+      );
+      fromSellerLi.appendChild(fromSellerLiText);
+      fromSellerUl.appendChild(fromSellerLi);
+    }
+    sellerFeedbackDiv.appendChild(fromSellerUl);
+    userInformationDiv.appendChild(sellerFeedbackDiv);
+
+    document
+      .querySelector('div[id="info_block"]')
+      .appendChild(userInformationDiv);
   } catch (error) {
     console.error(error);
   }
