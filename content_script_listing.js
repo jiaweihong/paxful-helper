@@ -9,7 +9,7 @@ const getProfiles = () => {
 
   // Calls all the getProfile index in a single loop without waiting for each function to finish
 
-  for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
+  for (tradeNum = 0; tradeNum < 5; tradeNum++) {
     // pass the index value of the array (tradeNum) to the getProfile() as an argument
     getProfile(tradeNum);
   }
@@ -224,7 +224,7 @@ const getProfile = async (tradeNum) => {
     // Image 2) Create an image element
     let negativeFeedbackIMG = document.createElement('img');
     // Image 3) When setting the value for src, you need to use chrome.runtime.getURL api as it convert the path to a fully qualified URL that is relative to your extension. Otherwise, it will read the path relative to the website, i.e paxful.com/images/dislike.svg
-    negativeFeedbackIMG.src = chrome.runtime.getURL('images/dislike.svg');
+    negativeFeedbackIMG.src = chrome.runtime.getURL('images/thumbs_down.svg');
     negativeFeedbackIMG.height = 16;
     negativeFeedbackIMG.width = 16;
     let negativeFeedbackText = document.createTextNode(`${negativeFeedback}`);
