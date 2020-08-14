@@ -119,42 +119,84 @@ const getFeedback = async (tradeNum) => {
       totalFeedbackOfBitcoinSoldWithPaymentX +
       totalFeedbackOfBitcoinBoughtWithPaymentX;
 
+    // Feedback Information Div to hold all the info
+    let feedbackInformationDiv = document.createElement('div');
+
     // Creating the DOM elements and adding it to the page
     let feedbackPara = document.createElement('p');
-    let feedbackText = document.createTextNode(
-      `Total ${paymentType} feedback: ${totalNumberOfFeedbackWithPaymentX} `
-    );
-    feedbackPara.appendChild(feedbackText);
-    document
-      .getElementsByClassName('Offer__content')
-      [tradeNum].querySelector(
-        'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
-      )
-      .appendChild(feedbackPara);
+    feedbackPara.style = 'margin-bottom: 0px; margin-top: 5px;';
 
-    let buyerFeedbackPara = document.createElement('p');
-    let buyerFeedbackText = document.createTextNode(
-      `Total feedback from buyers using ${paymentType}: ${totalFeedbackOfBitcoinBoughtWithPaymentX} `
+    // creating muted title
+    let feedbackTitleSpan = document.createElement('span');
+    let feedbackTitleText = document.createTextNode(
+      `Total ${paymentType} feedback: `
     );
-    buyerFeedbackPara.appendChild(buyerFeedbackText);
-    document
-      .getElementsByClassName('Offer__content')
-      [tradeNum].querySelector(
-        'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
-      )
-      .appendChild(buyerFeedbackPara);
+    feedbackTitleSpan.className = 'text-muted';
+    feedbackTitleSpan.appendChild(feedbackTitleText);
 
-    let sellerFeedbackPara = document.createElement('p');
-    let sellerFeedbackText = document.createTextNode(
-      `Total feedback from sellers for ${paymentType}: ${totalFeedbackOfBitcoinSoldWithPaymentX} `
+    // creating feedback number value
+    let feedbackValueSpan = document.createElement('span');
+    let feedbackValueText = document.createTextNode(
+      totalNumberOfFeedbackWithPaymentX
     );
-    sellerFeedbackPara.appendChild(sellerFeedbackText);
+    feedbackValueSpan.appendChild(feedbackValueText);
+
+    feedbackPara.appendChild(feedbackTitleSpan);
+    feedbackPara.appendChild(feedbackValueSpan);
+
+    feedbackInformationDiv.appendChild(feedbackPara);
+
+    // Buyer and seller breakdown of the feedback
+    let feedbackBreakdownUl = document.createElement('ul');
+
+    // buyer
+    let buyerFeedbackLi = document.createElement('li');
+    let buyerFeedbackLiTitleSpan = document.createElement('span');
+    buyerFeedbackLiTitleSpan.className = 'text-muted';
+    let buyerFeedbackLiTitleText = document.createTextNode(
+      `Total feedback from buyers using ${paymentType}: `
+    );
+    buyerFeedbackLiTitleSpan.appendChild(buyerFeedbackLiTitleText);
+
+    let buyerFeedbackLiValueSpan = document.createElement('span');
+    let buyerFeedbackLiValueText = document.createTextNode(
+      totalFeedbackOfBitcoinBoughtWithPaymentX
+    );
+    buyerFeedbackLiValueSpan.appendChild(buyerFeedbackLiValueText);
+
+    buyerFeedbackLi.appendChild(buyerFeedbackLiTitleSpan);
+    buyerFeedbackLi.appendChild(buyerFeedbackLiValueSpan);
+
+    feedbackBreakdownUl.appendChild(buyerFeedbackLi);
+
+    // seller
+    let sellerFeedbackLi = document.createElement('li');
+    let sellerFeedbackLiTitleSpan = document.createElement('span');
+    sellerFeedbackLiTitleSpan.className = 'text-muted';
+    let sellerFeedbackLiTitleText = document.createTextNode(
+      `Total feedback from sellers using ${paymentType}: `
+    );
+    sellerFeedbackLiTitleSpan.appendChild(sellerFeedbackLiTitleText);
+
+    let sellerFeedbackLiValueSpan = document.createElement('span');
+    let sellerFeedbackLiValueText = document.createTextNode(
+      totalFeedbackOfBitcoinSoldWithPaymentX
+    );
+    sellerFeedbackLiValueSpan.appendChild(sellerFeedbackLiValueText);
+
+    sellerFeedbackLi.appendChild(sellerFeedbackLiTitleSpan);
+    sellerFeedbackLi.appendChild(sellerFeedbackLiValueSpan);
+
+    feedbackBreakdownUl.appendChild(sellerFeedbackLi);
+
+    feedbackInformationDiv.appendChild(feedbackBreakdownUl);
+
     document
       .getElementsByClassName('Offer__content')
       [tradeNum].querySelector(
         'div[class="col order-5 order-lg-2 mt-2 mt-lg-0 qa-paymentMethodGroup"]'
       )
-      .appendChild(sellerFeedbackPara);
+      .appendChild(feedbackInformationDiv);
   } catch (error) {
     console.error(error);
   }
@@ -184,8 +226,6 @@ const getProfile = async (tradeNum) => {
     let negativeFeedback = dummyHTML.getElementsByClassName(
       'h3 m-0 text-danger d-flex justify-content-between align-items-center'
     )[0].innerText;
-    let profileImageSrc = dummyHTML.querySelector('img[class="rounded-circle"]')
-      .src;
     let lengthInfo = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item').length;
@@ -193,7 +233,7 @@ const getProfile = async (tradeNum) => {
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
       [lengthInfo - 5].getElementsByTagName('strong')[0].innerText;
-    let trades = dummyHTML
+    let tradeNumber = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
       [lengthInfo - 4].getElementsByTagName('strong')[0].innerText;
@@ -208,15 +248,20 @@ const getProfile = async (tradeNum) => {
     let verifiedArray = verifiedDataContent.split(' ');
     let verifiedDate = verifiedArray.slice(9, 12).join(' ');
 
-    let profileImageImg = document.createElement('img');
-    profileImageImg.src = profileImageSrc;
-    profileImageImg.height = 40;
-    profileImageImg.width = 40;
-    profileImageImg.style = 'border-radius: 50%; padding-right: 5px';
-    document
-      .getElementsByClassName('order-1 col-5 col-lg-2 d-flex flex-column pr-0')
-      [tradeNum].querySelector('div[class="d-flex align-items-center"]')
-      .prepend(profileImageImg);
+    let verifiedDatePara = document.createElement('p');
+    let verifiedDateText = document.createTextNode(
+      `ID verified: ${verifiedDate}`
+    );
+    verifiedDatePara.appendChild(verifiedDateText);
+    let profileNameDiv = document
+      .getElementsByClassName('Offer__content')
+      [tradeNum].getElementsByClassName(
+        'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
+      )[0]
+      .querySelector('div [class="d-flex align-items-center"]');
+    verifiedDatePara.style =
+      'color: #818181; font-size: 12px; line-height: 14px; font-family: Open Sans; font-style: normal; font-weight: normal; padding-top: 5px; margin-bottom: 10px;';
+    profileNameDiv.insertAdjacentElement('afterend', verifiedDatePara);
 
     // Create a paragraph element then createTextNode and append it to the new paragraph element.
     let negativeFeedbackPara = document.createElement('p');
@@ -237,63 +282,82 @@ const getProfile = async (tradeNum) => {
       )[0]
       .appendChild(negativeFeedbackPara);
 
+    let tradeInformationDiv = document.createElement('div');
+    tradeInformationDiv.style = 'margin-top: 10px;';
+
+    // trade partners
     let tradePartnersPara = document.createElement('p');
-    let tradePartnersText = document.createTextNode(
-      `Trade Partners: ${tradePartners}`
-    );
-    tradePartnersPara.appendChild(tradePartnersText);
-    document
-      .getElementsByClassName('Offer__content')
-      [tradeNum].getElementsByClassName(
-        'col-3 d-none d-lg-block order-lg-3 mt-4 regular-20 text-right'
-      )[0]
-      .appendChild(tradePartnersPara);
+    tradePartnersPara.style = 'margin-bottom: 0px';
 
+    let tradePartnersTitleSpan = document.createElement('span');
+    let tradePartnersTitleText = document.createTextNode('Trade partners: ');
+    tradePartnersTitleSpan.className = 'text-muted';
+    tradePartnersTitleSpan.appendChild(tradePartnersTitleText);
+
+    let tradePartnersValueSpan = document.createElement('span');
+    let tradePartnersValueText = document.createTextNode(tradePartners);
+    tradePartnersValueSpan.appendChild(tradePartnersValueText);
+
+    tradePartnersPara.appendChild(tradePartnersTitleSpan);
+    tradePartnersPara.appendChild(tradePartnersValueSpan);
+
+    tradeInformationDiv.appendChild(tradePartnersPara);
+
+    // trade volume
     let tradeVolumePara = document.createElement('p');
-    let tradeVolumeText = document.createTextNode(
-      `Trade Volume: ${tradeVolume}`
-    );
-    tradeVolumePara.appendChild(tradeVolumeText);
+    tradeVolumePara.style = 'margin-bottom: 0px';
+
+    let tradeVolumeTitleSpan = document.createElement('span');
+    let tradeVolumeTitleText = document.createTextNode('Trade volume: ');
+    tradeVolumeTitleSpan.className = 'text-muted';
+    tradeVolumeTitleSpan.appendChild(tradeVolumeTitleText);
+
+    let tradeVolumeValueSpan = document.createElement('span');
+    let tradeVolumeValueText = document.createTextNode(tradeVolume);
+    tradeVolumeValueSpan.appendChild(tradeVolumeValueText);
+
+    tradeVolumePara.appendChild(tradeVolumeTitleSpan);
+    tradeVolumePara.appendChild(tradeVolumeValueSpan);
+
+    tradeInformationDiv.appendChild(tradeVolumePara);
+
+    // trade number
+    let tradeNumberPara = document.createElement('p');
+    tradeNumberPara.style = 'margin-bottom: 0px';
+
+    let tradeNumberTitleSpan = document.createElement('span');
+    let tradeNumberTitleText = document.createTextNode('Total trades: ');
+    tradeNumberTitleSpan.className = 'text-muted';
+    tradeNumberTitleSpan.appendChild(tradeNumberTitleText);
+
+    let tradeNumberValueSpan = document.createElement('span');
+    let tradeNumberValueText = document.createTextNode(tradeNumber);
+    tradeNumberValueSpan.appendChild(tradeNumberValueText);
+
+    tradeNumberPara.appendChild(tradeNumberTitleSpan);
+    tradeNumberPara.appendChild(tradeNumberValueSpan);
+
+    tradeInformationDiv.appendChild(tradeNumberPara);
+
+    // Appending the whole trade information div
     document
       .getElementsByClassName('Offer__content')
       [tradeNum].getElementsByClassName(
         'col-3 d-none d-lg-block order-lg-3 mt-4 regular-20 text-right'
       )[0]
-      .appendChild(tradeVolumePara);
+      .appendChild(tradeInformationDiv);
 
-    let tradesPara = document.createElement('p');
-    let tradesText = document.createTextNode(`No. Trades: ${trades}`);
-    tradesPara.appendChild(tradesText);
-    document
-      .getElementsByClassName('Offer__content')
-      [tradeNum].getElementsByClassName(
-        'col-3 d-none d-lg-block order-lg-3 mt-4 regular-20 text-right'
-      )[0]
-      .appendChild(tradesPara);
-
-    let verifiedDatePara = document.createElement('p');
-    let verifiedDateIMG = document.createElement('img');
-    verifiedDateIMG.src = chrome.runtime.getURL('images/user.png');
-    verifiedDateIMG.height = 20;
-    verifiedDateIMG.width = 20;
-    let verifiedDateText = document.createTextNode(`  ${verifiedDate}`);
-    verifiedDatePara.appendChild(verifiedDateIMG);
-    verifiedDatePara.appendChild(verifiedDateText);
-    document
-      .getElementsByClassName('Offer__content')
-      [tradeNum].getElementsByClassName(
-        'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
-      )[0]
-      .appendChild(verifiedDatePara);
-
+    // Past 500 feedback
     let feedbackButton = document.createElement('button');
     feedbackButton.className = 'btn btn-primary';
+    feedbackButton.style = `margin-top: 10px;`;
     let feedbackButtonText = document.createTextNode('Get Past 500 Feedback');
     feedbackButton.appendChild(feedbackButtonText);
     feedbackButton.onclick = () => {
       getFeedback(tradeNum);
       feedbackButton.disabled = true;
     };
+
     document
       .getElementsByClassName('Offer__content')
       [tradeNum].querySelector(
@@ -301,7 +365,7 @@ const getProfile = async (tradeNum) => {
       )
       .appendChild(feedbackButton);
   } catch (error) {
-    getProfile(tradeNum);
+    console.error(error);
   }
 };
 
