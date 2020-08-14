@@ -9,7 +9,7 @@ const getProfiles = () => {
 
   // Calls all the getProfile index in a single loop without waiting for each function to finish
 
-  for (tradeNum = 0; tradeNum < 5; tradeNum++) {
+  for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
     // pass the index value of the array (tradeNum) to the getProfile() as an argument
     getProfile(tradeNum);
   }
