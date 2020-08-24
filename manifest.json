@@ -1,6 +1,6 @@
 {
   "name": "Paxful Helper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Allows you to quickly view all important information about a user on paxful",
   "manifest_version": 2,
   "icons": {
@@ -8,10 +8,6 @@
     "32": "images/paxfulhelper-icon32.png",
     "48": "images/paxfulhelper-icon48.png",
     "128": "images/paxfulhelper-icon128.png"
-  },
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
   },
   "page_action": {
     "default_popup": "popup.html",
