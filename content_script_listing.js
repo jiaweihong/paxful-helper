@@ -8,6 +8,34 @@ const getProfiles = () => {
     // pass the index value of the array (tradeNum) to the getProfile() as an argument
     getProfile(tradeNum);
   }
+
+  // Mutation Observer
+  // Select the node that will be observed for changes to its DOM
+  const targetNode = document.querySelectorAll('div[class="react-app"]')[9];
+
+  // Set up the callback function to execute when mutations are occurs
+  // Everytime there is a mutation, it will add an object regarding everything about the mutation to our 'mutations' array which we will then loop over to access each 'mutation'
+  const observer = new MutationObserver(function (mutations) {
+    for (mutation of mutations) {
+      if (
+        mutation.addedNodes[0] ==
+          document.querySelector('article[id="offer-list"]') &&
+        mutation.addedNodes.length === 1
+      ) {
+        // Gets the list of offers and passes it to the getProfile function
+        const offerList = document.getElementsByClassName('Offer__content');
+        for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
+          getProfile(tradeNum);
+        }
+      }
+    }
+  });
+
+  // Start obersving the selected node for mutations
+  // The 2nd argument allows you to configure which mutations are want to look for ( here we are looking for changes to the child nodes )
+  observer.observe(targetNode, {
+    childList: true,
+  });
 };
 
 const getFeedback = async (tradeNum) => {
