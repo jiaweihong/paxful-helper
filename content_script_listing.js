@@ -1,21 +1,39 @@
-const getProfiles = () => {
-  // Gets an array of all the offers
-  const offerList = document.getElementsByClassName('Offer__content');
+const applyLoadMoreObserver = () => {
+  // Mutation Observer for 'load more' offers
+  const loadMoreNode = document.querySelector(
+    'section[class="mb-3 qa-offers-list"]'
+  );
 
-  // Calls all the getProfile index in a single loop without waiting for each function to finish
+  const loadMoreObserver = new MutationObserver(function (mutations) {
+    const addedOffersLength = mutations.length;
+    const newOffersLength = document.getElementsByClassName('Offer__content')
+      .length;
+    const currentOffersLength = newOffersLength - addedOffersLength;
 
-  for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
-    // pass the index value of the array (tradeNum) to the getProfile() as an argument
-    getProfile(tradeNum);
-  }
+    for (
+      tradeNum = currentOffersLength;
+      tradeNum < newOffersLength;
+      tradeNum++
+    ) {
+      getProfile(tradeNum);
+    }
+  });
 
-  // Mutation Observer
+  loadMoreObserver.observe(loadMoreNode, {
+    childList: true,
+  });
+};
+
+const applyLoadDifferentObserver = () => {
+  // Mutation Observer for 'load different type' of offers
   // Select the node that will be observed for changes to its DOM
-  const targetNode = document.querySelectorAll('div[class="react-app"]')[9];
+  const loadDifferentNode = document.querySelectorAll(
+    'div[class="react-app"]'
+  )[9];
 
   // Set up the callback function to execute when mutations are occurs
   // Everytime there is a mutation, it will add an object regarding everything about the mutation to our 'mutations' array which we will then loop over to access each 'mutation'
-  const observer = new MutationObserver(function (mutations) {
+  const loadDifferentObserver = new MutationObserver(function (mutations) {
     for (mutation of mutations) {
       if (
         mutation.addedNodes[0] ==
@@ -27,15 +45,32 @@ const getProfiles = () => {
         for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
           getProfile(tradeNum);
         }
+        applyLoadMoreObserver();
       }
     }
   });
 
-  // Start obersving the selected node for mutations
-  // The 2nd argument allows you to configure which mutations are want to look for ( here we are looking for changes to the child nodes )
-  observer.observe(targetNode, {
+  // Start observing the selected node for mutations
+  // The 2nd argument allows you to configure which mutations you want to look for ( here we are looking for changes to the child nodes )
+  loadDifferentObserver.observe(loadDifferentNode, {
     childList: true,
   });
+};
+
+const getProfiles = () => {
+  // Gets an array of all the offers
+  const offerList = document.getElementsByClassName('Offer__content');
+
+  // Calls all the getProfile index in a single loop without waiting for each function to finish
+
+  for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
+    // pass the index value of the array (tradeNum) to the getProfile() as an argument
+    getProfile(tradeNum);
+  }
+
+  applyLoadDifferentObserver();
+
+  applyLoadMoreObserver();
 };
 
 const getFeedback = async (tradeNum) => {
