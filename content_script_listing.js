@@ -77,7 +77,7 @@ const getFeedback = async (tradeNum) => {
   try {
     // feedback
     const paymentType = document.querySelectorAll(
-      'p[class="m-0 regular-24 OfferPaymentMethod__paymentMethodName"]'
+      'p[class="align-bottom d-inline m-0 mr-2 regular-24 OfferPaymentMethod__paymentMethodName"]'
     )[tradeNum].innerText;
     const username = document.querySelectorAll(
       'a[class="OfferUser__userInfo"]'
