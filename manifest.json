@@ -1,6 +1,6 @@
 {
   "name": "Paxful Helper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Allows you to quickly view all important information about a vendor on paxful",
   "manifest_version": 2,
   "icons": {
