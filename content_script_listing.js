@@ -9,7 +9,7 @@ const applyLoadMoreObserver = () => {
     const newOffersLength = document.getElementsByClassName('Offer__content')
       .length;
     const currentOffersLength = newOffersLength - addedOffersLength;
-
+    console.log(mutations);
     for (
       tradeNum = currentOffersLength;
       tradeNum < newOffersLength;
@@ -27,11 +27,9 @@ const applyLoadMoreObserver = () => {
 const applyLoadDifferentObserver = () => {
   // Mutation Observer for 'load different type' of offers
   // Select the node that will be observed for changes to its DOM
-  const loadDifferentNode = document.querySelectorAll(
-    'div[class="react-app"]'
-  )[9];
+  const loadDifferentNode = document.querySelector('#offers-widget-wrapper');
 
-  // Set up the callback function to execute when mutations are occurs
+  // Set up the callback function to execute when a mutatio occurs
   // Everytime there is a mutation, it will add an object regarding everything about the mutation to our 'mutations' array which we will then loop over to access each 'mutation'
   const loadDifferentObserver = new MutationObserver(function (mutations) {
     for (mutation of mutations) {
@@ -57,12 +55,32 @@ const applyLoadDifferentObserver = () => {
   });
 };
 
+const isOfferTableGenerated = () => {
+  const offerTableNode = document.querySelector('#offers-widget-wrapper');
+  console.log(offerTableNode);
+
+  const offerTableObserver = new MutationObserver(function (mutations) {
+    for (mutation of mutations) {
+      if (
+        mutation.addedNodes[0] ==
+          document.querySelector('article[id="offer-list"]') &&
+        mutation.addedNodes.length === 1
+      ) {
+        getProfiles();
+      }
+    }
+  });
+
+  offerTableObserver.observe(offerTableNode, {
+    childList: true,
+  });
+};
+
 const getProfiles = () => {
   // Gets an array of all the offers
   const offerList = document.getElementsByClassName('Offer__content');
 
   // Calls all the getProfile index in a single loop without waiting for each function to finish
-
   for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
     // pass the index value of the array (tradeNum) to the getProfile() as an argument
     getProfile(tradeNum);
@@ -290,15 +308,15 @@ const getProfile = async (tradeNum) => {
     let tradePartners = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
-      [lengthInfo - 5].getElementsByTagName('strong')[0].innerText;
+      [lengthInfo - 6].getElementsByTagName('strong')[0].innerText;
     let tradeNumber = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
-      [lengthInfo - 4].getElementsByTagName('strong')[0].innerText;
+      [lengthInfo - 5].getElementsByTagName('strong')[0].innerText;
     let tradeVolume = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
-      [lengthInfo - 3].getElementsByTagName('strong')[0].innerText;
+      [lengthInfo - 4].getElementsByTagName('strong')[0].innerText;
     let verifiedDataContent = dummyHTML
       .getElementsByClassName('list-group-item d-flex align-items-center')[2]
       .querySelector('span')
@@ -308,7 +326,7 @@ const getProfile = async (tradeNum) => {
 
     let verifiedDatePara = document.createElement('p');
     let verifiedDateText = document.createTextNode(
-      `ID verified: ${verifiedDate}`
+      `ID verified: ${verifiedDate} ago`
     );
     verifiedDatePara.appendChild(verifiedDateText);
     let profileNameDiv = document
@@ -428,4 +446,4 @@ const getProfile = async (tradeNum) => {
 };
 
 // This will only call the callback function once the page has fully loaded
-window.addEventListener('load', getProfiles);
+window.addEventListener('load', isOfferTableGenerated);
