@@ -9,7 +9,7 @@ const applyLoadMoreObserver = () => {
     const newOffersLength = document.getElementsByClassName('Offer__content')
       .length;
     const currentOffersLength = newOffersLength - addedOffersLength;
-    console.log(mutations);
+
     for (
       tradeNum = currentOffersLength;
       tradeNum < newOffersLength;
@@ -57,13 +57,12 @@ const applyLoadDifferentObserver = () => {
 
 const isOfferTableGenerated = () => {
   const offerTableNode = document.querySelector('#offers-widget-wrapper');
-  console.log(offerTableNode);
 
   const offerTableObserver = new MutationObserver(function (mutations) {
     for (mutation of mutations) {
       if (
         mutation.addedNodes[0] ==
-          document.querySelector('article[id="offer-list"]') &&
+          document.querySelector('div[class=d-lg-flex]') &&
         mutation.addedNodes.length === 1
       ) {
         getProfiles();
