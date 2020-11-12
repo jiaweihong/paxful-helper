@@ -307,15 +307,15 @@ const getProfile = async (tradeNum) => {
     let tradePartners = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
-      [lengthInfo - 6].getElementsByTagName('strong')[0].innerText;
+      [lengthInfo - 8].getElementsByTagName('strong')[0].innerText;
     let tradeNumber = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
-      [lengthInfo - 5].getElementsByTagName('strong')[0].innerText;
+      [lengthInfo - 7].getElementsByTagName('strong')[0].innerText;
     let tradeVolume = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item')
-      [lengthInfo - 4].getElementsByTagName('strong')[0].innerText;
+      [lengthInfo - 6].getElementsByTagName('strong')[0].innerText;
     let verifiedDataContent = dummyHTML
       .getElementsByClassName('list-group-item d-flex align-items-center')[2]
       .querySelector('span')
