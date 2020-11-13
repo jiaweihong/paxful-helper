@@ -1,13 +1,15 @@
 const applyLoadMoreObserver = () => {
   // Mutation Observer for 'load more' offers
-  const loadMoreNode = document.querySelector(
-    'section[class="mb-3 qa-offers-list"]'
-  );
+  const loadMoreNode = document.querySelectorAll(
+    'section[class="mb-3 qa-offers-list OffersTableBody__offerList"]'
+  )[0];
 
   const loadMoreObserver = new MutationObserver(function (mutations) {
     const addedOffersLength = mutations.length;
-    const newOffersLength = document.getElementsByClassName('Offer__content')
-      .length;
+    const newOffersLength =
+      document.querySelectorAll(
+        'section[class="mb-3 qa-offers-list OffersTableBody__offerList"]'
+      )[0].childElementCount - 2;
     const currentOffersLength = newOffersLength - addedOffersLength;
 
     for (
