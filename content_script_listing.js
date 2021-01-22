@@ -1,16 +1,11 @@
 const applyLoadMoreObserver = () => {
   // Mutation Observer for 'load more' offers
-  const loadMoreNode = document.querySelectorAll(
-    'section[class="mb-3 qa-offers-list OffersTableBody__offerList"]'
-  )[0];
+  const loadMoreNode = document.querySelectorAll("#tour-offers-list")[0];
 
   const loadMoreObserver = new MutationObserver(function (mutations) {
     const addedOffersLength = mutations.length;
-    const newOffersLength =
-      document.querySelectorAll(
-        'section[class="mb-3 qa-offers-list OffersTableBody__offerList"]'
-      )[0].childElementCount - 2;
-    const currentOffersLength = newOffersLength - addedOffersLength;
+    const currentOffersLength = document.querySelectorAll("#tour-offers-list")[0].childNodes.length - 1 - addedOffersLength;
+    const newOffersLength = document.querySelectorAll("#tour-offers-list")[0].childNodes.length - 1;
 
     for (
       tradeNum = currentOffersLength;
@@ -29,25 +24,23 @@ const applyLoadMoreObserver = () => {
 const applyLoadDifferentObserver = () => {
   // Mutation Observer for 'load different type' of offers
   // Select the node that will be observed for changes to its DOM
-  const loadDifferentNode = document.querySelector('#offers-widget-wrapper');
+  const loadDifferentNode = document.querySelectorAll("#tour-offers-list")[1];
 
   // Set up the callback function to execute when a mutatio occurs
   // Everytime there is a mutation, it will add an object regarding everything about the mutation to our 'mutations' array which we will then loop over to access each 'mutation'
   const loadDifferentObserver = new MutationObserver(function (mutations) {
-    for (mutation of mutations) {
-      if (
-        mutation.addedNodes[0] ==
-          document.querySelector('article[id="offer-list"]') &&
-        mutation.addedNodes.length === 1
-      ) {
-        // Gets the list of offers and passes it to the getProfile function
-        const offerList = document.getElementsByClassName('Offer__content');
-        for (tradeNum = 0; tradeNum < offerList.length; tradeNum++) {
-          getProfile(tradeNum);
-        }
-        applyLoadMoreObserver();
-      }
+    const addedOffersLength = mutations.length;
+    const currentOffersLength = document.getElementsByClassName('Offer__content').length - addedOffersLength;
+    const newOffersLength = document.getElementsByClassName('Offer__content').length;
+
+    for (
+      tradeNum = currentOffersLength;
+      tradeNum < newOffersLength;
+      tradeNum++
+    ) {
+      getProfile(tradeNum);
     }
+    
   });
 
   // Start observing the selected node for mutations
@@ -57,25 +50,35 @@ const applyLoadDifferentObserver = () => {
   });
 };
 
-const isOfferTableGenerated = () => {
-  const offerTableNode = document.querySelector('#offers-widget-wrapper');
+const applyLoadNewObserver = () => {
+  const loadNewNode = document.querySelector('div[class="offersContainer"]');
 
-  const offerTableObserver = new MutationObserver(function (mutations) {
-    for (mutation of mutations) {
-      if (
-        mutation.addedNodes[0] ==
-          document.querySelector('div[class=d-lg-flex]') &&
-        mutation.addedNodes.length === 1
-      ) {
-        getProfiles();
-      }
+  const loadNewObserver = new MutationObserver(function (mutations){
+    console.log(mutations);
+    console.log(mutations[4].addedNodes[0]);
+
+    if (mutations[4].addedNodes[0] == document.querySelector('div[class="d-lg-flex mt-md-4 flex-column"]')){
+      addObserverWhenTableGenerated();
     }
   });
 
-  offerTableObserver.observe(offerTableNode, {
+  loadNewObserver.observe(loadNewNode, {
     childList: true,
   });
+
 };
+
+const addObserverWhenTableGenerated = () => {
+  const offerTableNode = document.querySelector('#tour-offers-list');
+
+  if (!offerTableNode) {
+    window.setTimeout(addObserverWhenTableGenerated,500);
+    return;
+  }
+
+  getProfiles();
+};
+
 
 const getProfiles = () => {
   // Gets an array of all the offers
@@ -288,7 +291,7 @@ const getProfile = async (tradeNum) => {
       [tradeNum].querySelector('.OfferUser__userInfo')
       .getAttribute('href');
 
-    const res = await fetch(`https://paxful.com${profilePath}`);
+    const res = await fetch(profilePath);
 
     if (!res.ok) {
       throw 'network error';
@@ -300,9 +303,6 @@ const getProfile = async (tradeNum) => {
     let dummyHTML = document.createElement('html');
     dummyHTML.innerHTML = `${html}`;
 
-    let negativeFeedback = dummyHTML.getElementsByClassName(
-      'h3 m-0 text-danger d-flex justify-content-between align-items-center'
-    )[0].innerText;
     let lengthInfo = dummyHTML
       .getElementsByClassName('list-group')[1]
       .getElementsByClassName('list-group-item').length;
@@ -339,25 +339,6 @@ const getProfile = async (tradeNum) => {
     verifiedDatePara.style =
       'color: #818181; font-size: 12px; line-height: 14px; font-family: Open Sans; font-style: normal; font-weight: normal; padding-top: 5px; margin-bottom: 10px;';
     profileNameDiv.insertAdjacentElement('afterend', verifiedDatePara);
-
-    // Create a paragraph element then createTextNode and append it to the new paragraph element.
-    let negativeFeedbackPara = document.createElement('p');
-    // Image 1) When using images that you want to insert into the content of a page, you need to define it in the web_accessible_resources.
-    // Image 2) Create an image element
-    let negativeFeedbackIMG = document.createElement('img');
-    // Image 3) When setting the value for src, you need to use chrome.runtime.getURL api as it convert the path to a fully qualified URL that is relative to your extension. Otherwise, it will read the path relative to the website, i.e paxful.com/images/dislike.svg
-    negativeFeedbackIMG.src = chrome.runtime.getURL('images/thumbs_down.svg');
-    negativeFeedbackIMG.height = 16;
-    negativeFeedbackIMG.width = 16;
-    let negativeFeedbackText = document.createTextNode(`${negativeFeedback}`);
-    negativeFeedbackPara.appendChild(negativeFeedbackIMG);
-    negativeFeedbackPara.appendChild(negativeFeedbackText);
-    document
-      .getElementsByClassName('Offer__content')
-      [tradeNum].getElementsByClassName(
-        'order-1 col-5 col-lg-2 d-flex flex-column pr-0'
-      )[0]
-      .appendChild(negativeFeedbackPara);
 
     let tradeInformationDiv = document.createElement('div');
     tradeInformationDiv.style = 'margin-top: 10px;';
@@ -447,4 +428,4 @@ const getProfile = async (tradeNum) => {
 };
 
 // This will only call the callback function once the page has fully loaded
-window.addEventListener('load', isOfferTableGenerated);
+window.addEventListener('load', applyLoadNewObserver);
