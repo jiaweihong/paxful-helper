@@ -1,10 +1,10 @@
-# Paxful Helper
+# Paxful Helper 
 
 ## What is Paxful Helper?
 
 Paxful Helper is a Google chrome extension that scrapes and calculates data / profile information off of other users profile page, which it then formats and displays it directly onto the page.
 
-The highlighted sections are the additions that will be generated to the page when you download the extension.
+The highlighted sections are the additional content that will be generated to the page when you download the extension.
 
 ### Trade window with a user:
 
@@ -19,4 +19,5 @@ The highlighted sections are the additions that will be generated to the page wh
 
 ## Download link
 
-Chrome Store: https://chrome.google.com/webstore/detail/paxful-helper/inmmpimgdldcgmcglgoplllhpnkhlfja?hl=en
+~~Chrome Store: https://chrome.google.com/webstore/detail/paxful-helper/inmmpimgdldcgmcglgoplllhpnkhlfja?hl=en~~
+The link is no longer valid as the project has been discontinued .
