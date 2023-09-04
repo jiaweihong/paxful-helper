@@ -2,7 +2,7 @@
 
 ## What is Paxful Helper?
 
-Paxful Helper is a Google chrome extension that scrapes and calculates relevant metrics from other Paxful user/vendor's profile page, after which it injects the data directly onto the HTML of the page. The aim of the extension was to allow potentials buyers / sellers to more easily verify if a user was trustworthy or not.
+Paxful Helper is a Google chrome extension that scrapes and calculates relevant metrics from other Paxful user/vendor's profile page, after which it injects the data directly onto the HTML of the page. The aim of the extension was to allow potential buyers / sellers to more easily verify if a vendor was trustworthy or not.
 
 The highlighted sections are the additional content that will be generated to the page when you download the extension.
 
