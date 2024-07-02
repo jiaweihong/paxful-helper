@@ -22,4 +22,4 @@ The highlighted sections are the additional content that will be generated to th
 
 ~~Chrome Store: https://chrome.google.com/webstore/detail/paxful-helper/inmmpimgdldcgmcglgoplllhpnkhlfja?hl=en~~
 
-The link is no longer valid as the project has been discontinued and as a result, has been removed from the chrome store. It had about ~20 active users.
+The link is no longer valid as the project has been discontinued and as a result, has been removed from the chrome store. It had about ~30 active users.
